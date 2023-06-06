@@ -1,7 +1,7 @@
 import logging
 import tensorflow as tf
-import model.data as data
-import model.pipelining as pipe
+import data_model.data as data
+import data_model.pipelining as pipe
 import utils.request_classes as rq
 import matplotlib.pyplot as plt
 from utils.metrics import METRICS, multifactor_loss
