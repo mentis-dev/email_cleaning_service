@@ -10,7 +10,7 @@ import tensorflow as tf
 from keras.layers import Dense, Concatenate, Bidirectional, GRU, Dropout
 
 
-mlflow.set_tracking_uri("https://mentis.io/mlflow/")
+mlflow.set_tracking_uri(sys.argv[1])
 mlflow.set_experiment(experiment_name="EC_classifier_training")
 
 logging.info("Creating default model")
