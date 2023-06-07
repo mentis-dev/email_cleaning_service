@@ -1,11 +1,11 @@
 import logging
 import sys
-import data_model.data as data
-import data_model.pipelining as pipe
-import utils.request_classes as rq
+import email_cleaning_service.data_model.data as data
+import email_cleaning_service.data_model.pipelining as pipe
+import email_cleaning_service.utils.request_classes as rq
 from typing import List
-import services.segmenting_service as seg
-import services.training_service as train
+import email_cleaning_service.services.segmenting_service as seg
+import email_cleaning_service.services.training_service as train
 import mlflow
 
 

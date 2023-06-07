@@ -1,0 +1,8 @@
+keras==2.10.0
+matplotlib==3.7.1
+mlflow==2.0.1
+pandas==1.5.3
+pydantic==1.10.7
+setuptools==67.6.1
+tensorflow==2.10.1
+transformers==4.27.2

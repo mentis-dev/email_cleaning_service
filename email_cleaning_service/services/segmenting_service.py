@@ -1,9 +1,9 @@
 import logging
 import tensorflow as tf
-import data_model.data as data
-import data_model.pipelining as pipe
-from utils.data_manipulation import flatten_list, batch_list
-from config import DEVICE
+import email_cleaning_service.data_model.data as data
+import email_cleaning_service.data_model.pipelining as pipe
+from email_cleaning_service.utils.data_manipulation import flatten_list, batch_list
+from email_cleaning_service.config import DEVICE
 
 
 def segment(dataset: data.EmailDataset, pipeline: pipe.PipelineModel) -> None:

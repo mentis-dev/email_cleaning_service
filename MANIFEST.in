@@ -1,4 +1,4 @@
 include LICENSE
 include requirements.txt
+graft src/email_cleaning_service
 graft tests
-graft email_cleaning_service

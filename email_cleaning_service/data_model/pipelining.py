@@ -4,15 +4,15 @@ import os
 import re
 import tensorflow as tf
 from typing import List, Generator, Any, Optional, Union
-import utils.request_classes as rq
-from utils.data_manipulation import parse_str_to_list
+import email_cleaning_service.utils.request_classes as rq
+from email_cleaning_service.utils.data_manipulation import parse_str_to_list
 from keras.layers import Bidirectional, GRU, Dropout, Dense, Concatenate
 from transformers import TFAutoModel, AutoTokenizer
 import mlflow
 from mlflow.models.signature import ModelSignature
 import shutil
 
-from config import FEATURE_REGEX
+from email_cleaning_service.config import FEATURE_REGEX
 
 
 class ExtractorModel:

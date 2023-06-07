@@ -1,13 +1,13 @@
 import logging
 import tensorflow as tf
-import data_model.data as data
-import data_model.pipelining as pipe
-import utils.request_classes as rq
+import email_cleaning_service.data_model.data as data
+import email_cleaning_service.data_model.pipelining as pipe
+import email_cleaning_service.utils.request_classes as rq
 import matplotlib.pyplot as plt
-from utils.metrics import METRICS, multifactor_loss
+from email_cleaning_service.utils.metrics import METRICS, multifactor_loss
 from transformers import AutoTokenizer
 import mlflow
-from config import DEVICE
+from email_cleaning_service.config import DEVICE
 import shutil
 import os                                                                   
 

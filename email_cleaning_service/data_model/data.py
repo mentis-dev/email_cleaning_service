@@ -5,10 +5,10 @@ import tensorflow as tf
 import pandas as pd
 import json
 import re
-import utils.request_classes as rq
-from utils.data_manipulation import flatten_list, batch_list
+import email_cleaning_service.utils.request_classes as rq
+from email_cleaning_service.utils.data_manipulation import flatten_list, batch_list
 
-from config import PREPROCESSING, SECTIONS
+from email_cleaning_service.config import PREPROCESSING, SECTIONS
 
 
 class EmailMessage:
