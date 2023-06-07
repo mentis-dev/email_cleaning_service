@@ -1,0 +1,4 @@
+include LICENSE
+include requirements.txt
+graft tests
+graft email_cleaning_service
