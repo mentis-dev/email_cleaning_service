@@ -41,7 +41,7 @@ def main(tracking_uri: str = "https://mentis.io/mlflow/"):
     clf = tf.keras.Model(inputs=i, outputs=x)
 
     logging.info("logging default model")
-    with mlflow.start_run(run_name="default"):
+    with mlflow.start_run(run_name="default_final"):
         mlflow.log_params(
             {
                 "encoder_id": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
@@ -64,7 +64,7 @@ def main(tracking_uri: str = "https://mentis.io/mlflow/"):
 
     logging.info("Creating optimized model")
     clf.load_weights(
-        "./temp/base_multi_miniLM_classifier_optimized/multi_miniLM_classifier.h5"
+        "../temp/base_multi_miniLM_classifier_optimized/multi_miniLM_classifier.h5"
     )
 
     logging.info("logging optimized model")

@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     pipeline_specs = rq.PipelineSpecs(
         origin="hugg",
-        classifier_id=""
+        classifier_id="a1f66311816e417cb94db7c2457b25d1"
     )
 
     dataset = emailCleaner.segment(thread_list, pipeline_specs)
