@@ -7,8 +7,6 @@ jobs:
   testing:
     runs-on: ubuntu-latest
     steps:
-      - name: Tox tests
-        uses: fedora-python/tox-github-action@v37.0
-        with:
-          tox_env: env
+      - run: tox
+      
 
