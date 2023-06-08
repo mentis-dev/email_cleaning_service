@@ -11,7 +11,6 @@ jobs:
         uses: paolorechia/pox@v1.0.1
         with:
           tox_env: env
-      - run: tox
-        
+      - run: ls        
       
 
