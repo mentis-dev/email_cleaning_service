@@ -61,27 +61,4 @@ class EmailCleaner:
         train.train_encoder(run_specs, dataset, encoder)  # type: ignore
 
 
-if __name__ == "__main__":
-
-    tracking_uri = "https://mentis.io/mlflow/" if len(sys.argv) < 2 else sys.argv[1]
-
-    emailCleaner = EmailCleaner()
-
-    # Example of how to segment a dataset
-
-    thread_list = [
-        "This is a test email. I am testing the email cleaner.",
-        "This is another test email with two lines.\n I am testing the email cleaner.",
-    ]
-
-    pipeline_specs = rq.PipelineSpecs(
-        origin="hugg",
-        classifier_id="a1f66311816e417cb94db7c2457b25d1"
-    )
-
-    dataset = emailCleaner.segment(thread_list, pipeline_specs)
-    print(dataset.to_dict())
-
-    # TODO: add testing for training
-
 

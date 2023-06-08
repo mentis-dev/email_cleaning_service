@@ -31,12 +31,12 @@ def read_requirements(path):
 
 setup(
     name="email_cleaning_service",
-    version="0.0.1",
+    version="0.0.2",
     description="Awesome email_cleaning_service created by paul_lestrat",
     url="https://github.com/JacksonKnew/email_cleaning_service",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     author="paul_lestrat",
-    packages=find_packages(exclude=["tests", ".github"]),
+    packages=find_packages(exclude=[".github"]),
     install_requires=read_requirements("requirements.txt"),
 )
