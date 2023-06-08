@@ -7,11 +7,8 @@ jobs:
   testing:
     runs-on: ubuntu-latest
     steps:
-      - name: Tox Env
-        # You may pin to the exact commit or the version.
-        # uses: paolorechia/pox@3f66c75ba9990f315eabb45cf03efac0d91d7df6
-        uses: paolorechia/pox@v1.0.1
+      - name: Tox tests
+        uses: fedora-python/tox-github-action@v37.0
         with:
-          # Tox environment that will be used
           tox_env: env
 
