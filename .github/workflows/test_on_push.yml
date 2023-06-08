@@ -12,9 +12,5 @@ jobs:
         # uses: fedora-python/tox-github-action@c61622a8c54b6712aff7fc300f4da2250b1c0a64
         uses: fedora-python/tox-github-action@v37.0
         with:
-          # Tox environment to run the tests on
-          tox_env: # default is py38
-          # Space separated packages to install via dnf install (can contain options)
-          dnf_install: # optional, default is 
-          # Path to switch to before running tox.
-          workdir: # optional, default is 
+          tox_env: py38
+
