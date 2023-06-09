@@ -261,7 +261,7 @@ class EmailDataset:
         TODO: implement this method"""
         raise NotImplementedError
 
-    def build_dataset(self, batch_size: int = 16) -> "EmailDataset":
+    def build_dataset(self, batch_size: int = 2) -> "EmailDataset":
         sequences = [thread.get_sequences() for thread in self.threads]
         self.batch_size = batch_size
         self.seq_order = [i for i, seqs in enumerate(sequences) for _ in seqs]
