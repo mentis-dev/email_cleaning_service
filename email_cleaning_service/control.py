@@ -1,5 +1,4 @@
 import logging
-import sys
 import email_cleaning_service.data_model.data as data
 import email_cleaning_service.data_model.pipelining as pipe
 import email_cleaning_service.utils.request_classes as rq

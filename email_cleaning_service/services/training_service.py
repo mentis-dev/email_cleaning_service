@@ -120,11 +120,6 @@ def train_encoder(run_specs: rq.RunSpecs, dataset: data.EmailLineDataset, encode
         encoder_model.model.save_pretrained(save_directory + "/encoder") # type: ignore
         tokenizer.save_pretrained(save_directory + "/tokenizer") # type: ignore
         logging.info("logging encoder to server")
-        mlflow.log_artifacts(save_directory + "/encoder", "encoder")
-        logging.info("logging tokenizer to server")
-        mlflow.log_artifacts(save_directory + "/tokenizer", "tokenizer")
-        logging.info("Deleting temp files")
-        shutil.rmtree(save_directory)
         logging.info("Done")
     logging.info("Training complete")
 

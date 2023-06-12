@@ -109,8 +109,6 @@ class EncoderModel:
     @classmethod
     def from_mlflow(cls, run_id: str) -> "EncoderModel":
         artifact_path = f"./temp/{run_id}"
-        logging.info(f"Downloading artifacts from run {run_id} to {artifact_path}")
-        mlflow.artifacts.download_artifacts(run_id=run_id, dst_path=artifact_path)
         logging.info(f"Loading model from {artifact_path}")
         obj = cls(artifact_path + "/tokenizer", artifact_path + "/encoder")
         logging.info(f"Deleting {artifact_path}")
