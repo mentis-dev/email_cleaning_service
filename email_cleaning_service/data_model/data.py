@@ -94,6 +94,7 @@ class EmailThread:
             flatten_list([m.sections for m in self.messages]),
             padding=0,
             seq_len=seq_len,
+            dtype=int,
         )
 
     def get_fragment_sequences(self, seq_len: int = 64) -> List[List[float]]:
@@ -107,6 +108,7 @@ class EmailThread:
             ),
             padding=0,
             seq_len=seq_len,
+            dtype=int,
         )
 
     def get_label_sequences(self, seq_len: int = 64):
@@ -171,12 +173,12 @@ class EmailThread:
 
     @staticmethod
     def list2sequences(
-        email_list: list, seq_len: int = 64, padding: Any = ""
+        email_list: list, seq_len: int = 64, padding: Any = "", dtype: Any = str
     ) -> List[list]:
         """Creates sequences of specified length with padding for the last one"""
         inp_len = len(email_list)
         left = inp_len % seq_len
-        inputs = [part for part in batch_list(email_list, seq_len)]
+        inputs = [[dtype(element) for element in part] for part in batch_list(email_list, seq_len)]
         if left != 0:
             pad = [padding] * (seq_len - left)
             inputs[-1] += pad
@@ -211,10 +213,9 @@ class EmailDataset:
     def __init__(
         self,
         threads: List[str],
-        batch_size=16,
     ):
         self.threads = [EmailThread(str(thread)) for thread in threads]
-        self.build_dataset(batch_size)
+        self.build_dataset()
         self.is_labeled = False
 
     @classmethod

@@ -35,7 +35,8 @@ def test_encoder_training_service():
 
     dataset = RunSpecs(
         run_name="test_run_2",
-        csv_path="./test_data/test_en.csv",
+        csv_train="./test_data/test_en.csv",
+        csv_test="./test_data/test_en.csv",
         metrics=["seq_f1", "frag_f1"],
         lr=0.001,
         epochs=1,
@@ -58,7 +59,8 @@ def test_classifier_training_service():
 
     dataset = RunSpecs(
         run_name="test_run_2",
-        csv_path="/test_data/test_en.csv",
+        csv_train="/test_data/test_en.csv",
+        csv_test="/test_data/test_en.csv",
         metrics=["seq_f1", "frag_f1"],
         lr=0.01,
         epochs=1,
