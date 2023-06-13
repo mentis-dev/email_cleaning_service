@@ -7,9 +7,7 @@ import matplotlib.pyplot as plt
 from email_cleaning_service.utils.metrics import METRICS, multifactor_loss
 from transformers import AutoTokenizer
 import mlflow
-from email_cleaning_service.config import DEVICE
-import shutil
-import os                                                                   
+from email_cleaning_service.config import DEVICE                                                              
 
 
 def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, test_dataset: data.EmailDataset, pipeline: pipe.PipelineModel) -> None:
@@ -27,8 +25,8 @@ def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, t
         return gen
 
     logging.info("Training classifier...")
-    train_tf_dataset = train_dataset.get_tf_dataset()
-    test_tf_dataset = test_dataset.get_tf_dataset()
+    train_tf_dataset = train_dataset.set_batch_size(run_specs.batch_size).get_tf_dataset()
+    test_tf_dataset = test_dataset.set_batch_size(run_specs.batch_size).get_tf_dataset()
     feature_creator = pipeline.encoder
     classifier = pipeline.classifier
     train_feature_generator = _get_generator(train_tf_dataset, feature_creator)
@@ -44,6 +42,7 @@ def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, t
     with mlflow.start_run(run_name=run_specs.run_name):
         mlflow.log_params({
             "epochs": run_specs.epochs,
+            "batch_size": run_specs.batch_size,
             "optimizer": "adam",
             "lr": run_specs.lr,
             "loss": "multifactor_loss",
@@ -87,8 +86,8 @@ def train_encoder(run_specs: rq.RunSpecs, train_dataset: data.EmailLineDataset, 
         )
 
     logging.info("Training encoder...")
-    train_tf_dataset = train_dataset.get_tf_dataset()
-    test_tf_dataset = test_dataset.get_tf_dataset()
+    train_tf_dataset = train_dataset.set_batch_size(batch_size=run_specs.batch_size).get_tf_dataset()
+    test_tf_dataset = test_dataset.set_batch_size(batch_size=run_specs.batch_size).get_tf_dataset()
     tokenizer = encoder.tokenizer
     encoder_model = encoder.model
 
@@ -112,6 +111,7 @@ def train_encoder(run_specs: rq.RunSpecs, train_dataset: data.EmailLineDataset, 
 
         mlflow.log_params({
             "epochs": run_specs.epochs,
+            "batch_size": run_specs.batch_size,
             "optimizer": "adam",
             "lr": run_specs.lr,
             "loss": "sparse_categorical_crossentropy"

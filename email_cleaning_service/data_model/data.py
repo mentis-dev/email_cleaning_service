@@ -261,9 +261,8 @@ class EmailDataset:
         TODO: implement this method"""
         raise NotImplementedError
 
-    def build_dataset(self, batch_size: int = 2) -> "EmailDataset":
+    def build_dataset(self) -> "EmailDataset":
         sequences = [thread.get_sequences() for thread in self.threads]
-        self.batch_size = batch_size
         self.seq_order = [i for i, seqs in enumerate(sequences) for _ in seqs]
         if self.is_labeled:
             lab_sequences = [thread.get_label_sequences() for thread in self.threads]
@@ -273,7 +272,11 @@ class EmailDataset:
         else:
             self.dataset = tf.data.Dataset.from_tensor_slices(
                 flatten_list(sequences)
-            ).batch(self.batch_size)
+            )
+        return self
+
+    def set_batch_size(self, batch_size: int) -> "EmailDataset":
+        self.dataset = self.dataset.batch(batch_size)
         return self
 
     def to_dict(self) -> dict:
@@ -305,8 +308,12 @@ class EmailLineDataset:
         threads = df["Text"].tolist()
         labels = df["Section"].tolist()
         obj = cls()
-        obj.dataset = tf.data.Dataset.from_tensor_slices((threads, labels)).batch(3)
+        obj.dataset = tf.data.Dataset.from_tensor_slices((threads, labels))
         return obj
+    
+    def set_batch_size(self, batch_size: int) -> "EmailLineDataset":
+        self.dataset = self.dataset.batch(batch_size)
+        return self
 
     def get_tf_dataset(self) -> tf.data.Dataset:
         return self.dataset
