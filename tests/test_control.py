@@ -34,16 +34,16 @@ def test_encoder_training_service():
     # Example of how to train a classifier
 
     dataset = RunSpecs(
-        run_name="test_run",
-        csv_path="./tests/test_data/test_en.csv",
+        run_name="test_run_2",
+        csv_path="./test_data/test_en.csv",
         metrics=["seq_f1", "frag_f1"],
         lr=0.001,
         epochs=1,
     )
 
-    encoder_specs = PipelineSpecs(
-        origin="hugg",
-        encoder_id="sentence-transformers/paraphrase-MiniLM-L6-v2",
+    encoder_specs = EncoderSpecs(
+        origin="mlflow",
+        encoder="4f79fbb76bfb44c292a354e2cca5736e",
     )
 
     emailCleaner.train_encoder(dataset, encoder_specs=encoder_specs)
@@ -57,8 +57,8 @@ def test_classifier_training_service():
     # Example of how to train a classifier
 
     dataset = RunSpecs(
-        run_name="test_run",
-        csv_path="./tests/test_data/test_en.csv",
+        run_name="test_run_2",
+        csv_path="/test_data/test_en.csv",
         metrics=["seq_f1", "frag_f1"],
         lr=0.01,
         epochs=1,

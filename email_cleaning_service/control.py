@@ -6,13 +6,19 @@ from typing import List
 import email_cleaning_service.services.segmenting_service as seg
 import email_cleaning_service.services.training_service as train
 import mlflow
+from email_cleaning_service.config import TRACKING_URI, STORAGE_URI
 
 
 class EmailCleaner:
     """Controller class for the API. Used to control the pipeline and dataset objects."""
 
-    def __init__(self, tracking_uri: str = "https://mentis.io/mlflow/"):
-        mlflow.set_tracking_uri(tracking_uri)
+    tracking_uri: str
+    storage_uri: str
+
+    def __init__(self):
+        self.tracking_uri = TRACKING_URI
+        self.storage_uri = STORAGE_URI
+        mlflow.set_tracking_uri(self.tracking_uri)
         logging.info("Controller initialized")
 
     def segment(

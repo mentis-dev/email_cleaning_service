@@ -111,8 +111,6 @@ class EncoderModel:
         artifact_path = f"./temp/{run_id}"
         logging.info(f"Loading model from {artifact_path}")
         obj = cls(artifact_path + "/tokenizer", artifact_path + "/encoder")
-        logging.info(f"Deleting {artifact_path}")
-        shutil.rmtree(artifact_path)
         logging.info("Done")
         return obj
 
