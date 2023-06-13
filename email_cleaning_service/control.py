@@ -28,12 +28,7 @@ class EmailCleaner:
         pipeline must be a valid PipelineModel object
         """
         dataset = data.EmailDataset(thread_list)
-        if pipeline_specs.origin == "hugg":
-            pipeline = pipe.PipelineModel.from_hugg(pipeline_specs)
-        elif pipeline_specs.origin == "mlflow":
-            pipeline = pipe.PipelineModel.from_mlflow(pipeline_specs)
-        else:
-            raise ValueError("Invalid pipeline origin")
+        pipeline = pipe.PipelineModel.from_specs(pipeline_specs)
         seg.segment(dataset, pipeline)
         return dataset
 
@@ -45,13 +40,7 @@ class EmailCleaner:
         """
         train_dataset = data.EmailDataset.from_csv(run_specs.csv_train)
         test_dataset = data.EmailDataset.from_csv(run_specs.csv_test)
-
-        if pipeline_specs.origin == "hugg":
-            pipeline = pipe.PipelineModel.from_hugg(pipeline_specs)
-        elif pipeline_specs.origin == "mlflow":
-            pipeline = pipe.PipelineModel.from_mlflow(pipeline_specs)
-        else:
-            raise ValueError("Invalid pipeline origin")
+        pipeline = pipe.PipelineModel.from_specs(pipeline_specs)
         train.train_classifier(run_specs, train_dataset, test_dataset, pipeline)
 
     def train_encoder(self, run_specs: rq.RunSpecs, encoder_specs: rq.EncoderSpecs):
@@ -60,13 +49,8 @@ class EmailCleaner:
         """
         train_dataset = data.EmailLineDataset.from_csv(run_specs.csv_train)
         test_dataset = data.EmailLineDataset.from_csv(run_specs.csv_test)
-        if encoder_specs.origin == "hugg":
-            encoder = pipe.EncoderModel.from_hugg(encoder_specs.encoder)
-        elif encoder_specs.origin == "mlflow":
-            encoder = pipe.EncoderModel.from_mlflow(encoder_specs.encoder)
-        else:
-            raise ValueError("Invalid encoder origin")
-        train.train_encoder(run_specs, train_dataset, test_dataset, encoder)  # type: ignore
+        encoder = pipe.EncoderModel.from_specs(encoder_specs)
+        train.train_encoder(run_specs, train_dataset, test_dataset, encoder, self.storage_uri)  # type: ignore
 
 
 

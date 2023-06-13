@@ -117,6 +117,15 @@ class EncoderModel:
     @classmethod
     def from_hugg(cls, encoder_id: str) -> "EncoderModel":
         return cls(encoder_id, encoder_id)
+    
+    @classmethod
+    def from_specs(cls, specs: str, **kwargs) -> "EncoderModel":
+        if specs.origin == "mlflow":
+            return cls.from_mlflow(specs.encoder)
+        elif specs.origin == "hugg":
+            return cls.from_hugg(specs.encoder)
+        else:
+            raise ValueError(f"Unknown origin {specs.origin}")
 
     def __call__(self, inputs: tf.Tensor, normalize: bool = True) -> tf.Tensor:
         tokenized = [
@@ -240,6 +249,16 @@ class PipelineModel:
         )
         obj.classifier = ClassifierModel.from_mlflow(hugg_specs.classifier_id)
         return obj
+    
+    @classmethod
+    def from_specs(cls, specs: rq.PipelineSpecs) -> "PipelineModel":
+        if specs.origin == "mlflow":
+            return cls.from_mlflow(specs)
+        elif specs.origin == "hugg":
+            return cls.from_hugg(specs)
+        else:
+            raise ValueError(f"Unknown origin {specs.origin}")
+        
 
     def __call__(self, inputs: tf.Tensor) -> tf.Tensor:
         result = self.classifier(self.encoder(inputs))

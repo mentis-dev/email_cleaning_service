@@ -65,7 +65,7 @@ def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, t
     logging.info("Training complete")
 
 
-def train_encoder(run_specs: rq.RunSpecs, train_dataset: data.EmailLineDataset, test_dataset: data.EmailLineDataset, encoder: pipe.EncoderModel) -> None:
+def train_encoder(run_specs: rq.RunSpecs, train_dataset: data.EmailLineDataset, test_dataset: data.EmailLineDataset, encoder: pipe.EncoderModel, storage_uri: str) -> None:
     """Used to train the encoder on the dataset
     pipeline must be a valid PipelineModel object
     """
@@ -124,7 +124,7 @@ def train_encoder(run_specs: rq.RunSpecs, train_dataset: data.EmailLineDataset, 
         mlflow.log_metrics({"loss": fit_history.history["loss"][-1]})
 
         logging.info("Saving model in temp files")
-        save_directory = f"./temp/{run.info.run_id}"
+        save_directory = f"{storage_uri}{run.info.run_id}"
         encoder_model.model.save_pretrained(save_directory + "/encoder") # type: ignore
         tokenizer.save_pretrained(save_directory + "/tokenizer") # type: ignore
         logging.info("Done")
