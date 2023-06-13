@@ -19,7 +19,9 @@ class PipelineSpecs(BaseModel):
 
 class RunSpecs(BaseModel):
     run_name: str
-    csv_path: str
+    csv_train: str
+    csv_test: str
+    batch_size: int
     metrics: List[str]
     lr: float
     epochs: int
