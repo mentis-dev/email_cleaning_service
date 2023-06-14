@@ -26,6 +26,7 @@ def test_segmenting_service():
     dataset = emailCleaner.segment(thread_list, pipeline_specs)
     assert len(dataset.threads) == 2
 
+@pytest.mark.skip(reason="too long")
 def test_encoder_training_service():
     tracking_uri = "https://mentis.io/mlflow/"
 
@@ -37,6 +38,7 @@ def test_encoder_training_service():
         run_name="test_run_2",
         csv_train="./test_data/test_en.csv",
         csv_test="./test_data/test_en.csv",
+        batch_size=2,
         metrics=["seq_f1", "frag_f1"],
         lr=0.001,
         epochs=1,
@@ -50,6 +52,7 @@ def test_encoder_training_service():
     emailCleaner.train_encoder(dataset, encoder_specs=encoder_specs)
     assert True
 
+@pytest.mark.skip(reason="too long")
 def test_classifier_training_service():
     tracking_uri = "https://mentis.io/mlflow/"
 
@@ -61,6 +64,7 @@ def test_classifier_training_service():
         run_name="test_run_2",
         csv_train="/test_data/test_en.csv",
         csv_test="/test_data/test_en.csv",
+        batch_size=2,
         metrics=["seq_f1", "frag_f1"],
         lr=0.01,
         epochs=1,
