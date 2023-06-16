@@ -19,10 +19,10 @@ def test_segmenting_service():
     ]
 
     pipeline_specs = PipelineSpecs(
-        classifier_origin="config",
-        classifier_id="",
+        classifier_origin="h5",
+        classifier_id="email_cleaning_service/temp/base_multi_miniLM_classifier_optimized/multi_miniLM_classifier.h5",
         encoder_origin="hugg",
-        encoder_id="sentence-transformers/paraphrase-MiniLM-L12-v2"
+        encoder_id="sentence-transformers/paraphrase-MiniLM-L12-v2",
         encoder_dim=384,
         features=[
             "phone_number",
@@ -34,8 +34,7 @@ def test_segmenting_service():
             "email",
             "capitalized",
             "full_caps"
-        ]
-    )
+        ])
 
     dataset = emailCleaner.segment(thread_list, pipeline_specs)
     assert len(dataset.threads) == 2

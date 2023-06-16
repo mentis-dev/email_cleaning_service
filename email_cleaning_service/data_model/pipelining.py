@@ -34,7 +34,10 @@ class ExtractorModel:
 
     def __call__(self, inputs: tf.Tensor) -> tf.Tensor:
         feats = []
-        for sequence in inputs.numpy():  # type: ignore
+        inp = inputs.numpy()
+        if len(inp.shape) == 1:
+            inp = [inp]
+        for sequence in inp:  # type: ignore
             feats.append([])
             for line in sequence:
                 feats[-1].append(
@@ -128,6 +131,9 @@ class EncoderModel:
             raise ValueError(f"Unknown origin {specs.origin}")
 
     def __call__(self, inputs: tf.Tensor, normalize: bool = True) -> tf.Tensor:
+        inp = inputs.numpy()  
+        if len(inp.shape) == 1:
+            inp = [inp]
         tokenized = [
             self.tokenizer(
                 [line.decode("utf-8") for line in lines],
@@ -135,7 +141,7 @@ class EncoderModel:
                 truncation=True,
                 return_tensors="tf",
             )  # type: ignore
-            for lines in inputs.numpy()  # type: ignore
+            for lines in inp # type: ignore
         ]
         return tf.convert_to_tensor(
             [self.model(token) for token in tokenized], dtype=tf.float32  # type: ignore
@@ -175,6 +181,14 @@ class ClassifierModel:
     Specify classifier_name with the name of the model you want to use from the weights folder."""
 
     classifier = Union[tf.keras.Model, tf.keras.Sequential]
+
+    @classmethod
+    def from_h5(cls, classifier_name: str) -> "ClassifierModel":
+        obj = cls()
+        obj.classifier = tf.keras.models.load_model(
+            classifier_name, compile=False
+        )
+        return obj
 
     @classmethod
     def from_config(cls, config: str) -> "ClassifierModel":
@@ -260,6 +274,8 @@ class PipelineModel:
             obj.classifier = ClassifierModel.from_mlflow(specs.classifier_id)
         elif specs.classifier_origin == "specs":
             obj.classifier = ClassifierModel.from_config(specs.classifier_id)
+        elif specs.classifier_origin == "h5":
+            obj.classifier = ClassifierModel.from_h5(specs.classifier_id)
         
         if specs.encoder_origin == "mlflow":
             obj.encoder = FeatureCreator.from_mlflow(specs.encoder_id, specs.features)
