@@ -1,5 +1,4 @@
-import azure.storage.blob as azureblob
-
+import azure.storage.blob as azureblo
 
 
 class AzureService:
