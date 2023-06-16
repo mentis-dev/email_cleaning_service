@@ -94,6 +94,7 @@ class EmailThread:
             flatten_list([m.sections for m in self.messages]),
             padding=0,
             seq_len=seq_len,
+            dtype=int,
         )
 
     def get_fragment_sequences(self, seq_len: int = 64) -> List[List[float]]:
@@ -107,6 +108,7 @@ class EmailThread:
             ),
             padding=0,
             seq_len=seq_len,
+            dtype=int,
         )
 
     def get_label_sequences(self, seq_len: int = 64):
@@ -171,12 +173,12 @@ class EmailThread:
 
     @staticmethod
     def list2sequences(
-        email_list: list, seq_len: int = 64, padding: Any = ""
+        email_list: list, seq_len: int = 64, padding: Any = "", dtype: Any = str
     ) -> List[list]:
         """Creates sequences of specified length with padding for the last one"""
         inp_len = len(email_list)
         left = inp_len % seq_len
-        inputs = [part for part in batch_list(email_list, seq_len)]
+        inputs = [[dtype(element) for element in part] for part in batch_list(email_list, seq_len)]
         if left != 0:
             pad = [padding] * (seq_len - left)
             inputs[-1] += pad
@@ -211,10 +213,9 @@ class EmailDataset:
     def __init__(
         self,
         threads: List[str],
-        batch_size=16,
     ):
         self.threads = [EmailThread(str(thread)) for thread in threads]
-        self.build_dataset(batch_size)
+        self.build_dataset()
         self.is_labeled = False
 
     @classmethod
@@ -228,8 +229,8 @@ class EmailDataset:
         Expected Columns in csv file:
         - Email: email number to group lines by
         - Text: text of the line of the email
-        - Label: label of the line of the email
-        - Fragment: fragment changes equal to 1 when the line corresponds to a new fragment
+        - Section: label of the line of the email
+        - FragmentChange: fragment changes equal to 1 when the line corresponds to a new fragment
         """
         df = pd.read_csv(csv_file)
         df["Text"] = df["Text"].astype(str)
@@ -261,9 +262,8 @@ class EmailDataset:
         TODO: implement this method"""
         raise NotImplementedError
 
-    def build_dataset(self, batch_size: int = 16) -> "EmailDataset":
+    def build_dataset(self) -> "EmailDataset":
         sequences = [thread.get_sequences() for thread in self.threads]
-        self.batch_size = batch_size
         self.seq_order = [i for i, seqs in enumerate(sequences) for _ in seqs]
         if self.is_labeled:
             lab_sequences = [thread.get_label_sequences() for thread in self.threads]
@@ -273,7 +273,11 @@ class EmailDataset:
         else:
             self.dataset = tf.data.Dataset.from_tensor_slices(
                 flatten_list(sequences)
-            ).batch(self.batch_size)
+            )
+        return self
+
+    def set_batch_size(self, batch_size: int) -> "EmailDataset":
+        self.dataset = self.dataset.batch(batch_size)
         return self
 
     def to_dict(self) -> dict:
@@ -305,8 +309,12 @@ class EmailLineDataset:
         threads = df["Text"].tolist()
         labels = df["Section"].tolist()
         obj = cls()
-        obj.dataset = tf.data.Dataset.from_tensor_slices((threads, labels)).batch(3)
+        obj.dataset = tf.data.Dataset.from_tensor_slices((threads, labels))
         return obj
+    
+    def set_batch_size(self, batch_size: int) -> "EmailLineDataset":
+        self.dataset = self.dataset.batch(batch_size)
+        return self
 
     def get_tf_dataset(self) -> tf.data.Dataset:
         return self.dataset

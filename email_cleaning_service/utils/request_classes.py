@@ -10,8 +10,9 @@ class EncoderSpecs(BaseModel):
 
 
 class PipelineSpecs(BaseModel):
-    origin: str
+    classifier_origin: str
     classifier_id: str
+    encoder_origin: str
     encoder_id: Optional[str]
     encoder_dim: Optional[int]
     features: Optional[List[str]]
@@ -19,7 +20,9 @@ class PipelineSpecs(BaseModel):
 
 class RunSpecs(BaseModel):
     run_name: str
-    csv_path: str
+    csv_train: str
+    csv_test: str
+    batch_size: int
     metrics: List[str]
     lr: float
     epochs: int

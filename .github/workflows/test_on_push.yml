@@ -1,0 +1,18 @@
+name: test_on_push
+
+on:
+  push
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    steps:
+      - run: cd ..
+      - name: tests
+        uses: paolorechia/pox@v1.0.1
+        with:
+          tox_env: env
+      - uses: actions/checkout@v3
+      - run: tox 
+      
+

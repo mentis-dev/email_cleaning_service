@@ -7,12 +7,10 @@ import matplotlib.pyplot as plt
 from email_cleaning_service.utils.metrics import METRICS, multifactor_loss
 from transformers import AutoTokenizer
 import mlflow
-from email_cleaning_service.config import DEVICE
-import shutil
-import os                                                                   
+from email_cleaning_service.config import DEVICE                                                              
 
 
-def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, pipeline: pipe.PipelineModel) -> None:
+def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, test_dataset: data.EmailDataset, pipeline: pipe.PipelineModel) -> None:
     """Used to train the classifier on the dataset
     pipeline must be a valid PipelineModel object
     """
@@ -27,10 +25,13 @@ def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, p
         return gen
 
     logging.info("Training classifier...")
-    tf_dataset = train_dataset.get_tf_dataset()
+    train_tf_dataset = train_dataset.set_batch_size(run_specs.batch_size).get_tf_dataset()
+    test_tf_dataset = test_dataset.set_batch_size(run_specs.batch_size).get_tf_dataset()
     feature_creator = pipeline.encoder
     classifier = pipeline.classifier
-    feature_generator = _get_generator(tf_dataset, feature_creator)
+    train_feature_generator = _get_generator(train_tf_dataset, feature_creator)
+    test_feature_generator = _get_generator(test_tf_dataset, feature_creator)
+
 
     # Defining run parameters
     optimizer = tf.keras.optimizers.Adam(learning_rate=run_specs.lr)
@@ -41,6 +42,7 @@ def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, p
     with mlflow.start_run(run_name=run_specs.run_name):
         mlflow.log_params({
             "epochs": run_specs.epochs,
+            "batch_size": run_specs.batch_size,
             "optimizer": "adam",
             "lr": run_specs.lr,
             "loss": "multifactor_loss",
@@ -51,7 +53,8 @@ def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, p
         })
 
         with tf.device(DEVICE): # type: ignore
-            fit_history = classifier.classifier.fit(feature_generator(), epochs=run_specs.epochs) # type: ignore
+            fit_history = classifier.classifier.fit(train_feature_generator(), epochs=run_specs.epochs) # type: ignore
+            scores = classifier.classifier.evaluate(test_feature_generator(), verbose=1) # type: ignore
         
         mlflow.log_metrics({
             metric_name: fit_history.history[metric_fn.__name__][-1] for metric_name, metric_fn in metrics_fn.items()
@@ -61,7 +64,7 @@ def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, p
     logging.info("Training complete")
 
 
-def train_encoder(run_specs: rq.RunSpecs, dataset: data.EmailLineDataset, encoder: pipe.EncoderModel) -> None:
+def train_encoder(run_specs: rq.RunSpecs, train_dataset: data.EmailLineDataset, test_dataset: data.EmailLineDataset, encoder: pipe.EncoderModel, storage_uri: str) -> None:
     """Used to train the encoder on the dataset
     pipeline must be a valid PipelineModel object
     """
@@ -83,17 +86,20 @@ def train_encoder(run_specs: rq.RunSpecs, dataset: data.EmailLineDataset, encode
         )
 
     logging.info("Training encoder...")
-    tf_dataset = dataset.get_tf_dataset()
+    train_tf_dataset = train_dataset.set_batch_size(batch_size=run_specs.batch_size).get_tf_dataset()
+    test_tf_dataset = test_dataset.set_batch_size(batch_size=run_specs.batch_size).get_tf_dataset()
     tokenizer = encoder.tokenizer
     encoder_model = encoder.model
 
-    feature_generator = _get_dataset(tf_dataset, tokenizer)
+    train_feature_generator = _get_dataset(train_tf_dataset, tokenizer)
+    test_feature_generator = _get_dataset(test_tf_dataset, tokenizer)
 
     input_ids = tf.keras.layers.Input(shape=(None,), dtype=tf.int32, name="input_ids")
     token_type_ids = tf.keras.layers.Input(shape=(None, ), dtype=tf.int32, name="token_type_ids")
     attention_mask = tf.keras.layers.Input(shape=(None,), dtype=tf.int32, name="attention_mask")
     
     x = encoder_model([input_ids, token_type_ids, attention_mask]) # type: ignore
+    x = tf.keras.layers.Dense(128, activation='relu')(x)
     x = tf.keras.layers.Dropout(0.2)(x)
     x = tf.keras.layers.Dense(7, activation='softmax')(x)
     clf = tf.keras.Model(inputs=[input_ids, token_type_ids, attention_mask], outputs=x)
@@ -105,26 +111,22 @@ def train_encoder(run_specs: rq.RunSpecs, dataset: data.EmailLineDataset, encode
 
         mlflow.log_params({
             "epochs": run_specs.epochs,
+            "batch_size": run_specs.batch_size,
             "optimizer": "adam",
             "lr": run_specs.lr,
             "loss": "sparse_categorical_crossentropy"
         })
 
         with tf.device(DEVICE): # type: ignore
-            fit_history = clf.fit(feature_generator, epochs=run_specs.epochs)
+            fit_history = clf.fit(train_feature_generator, epochs=run_specs.epochs)
+            scores = clf.evaluate(test_feature_generator)
         
         mlflow.log_metrics({"loss": fit_history.history["loss"][-1]})
 
         logging.info("Saving model in temp files")
-        save_directory = f"./temp/{run.info.run_id}"
+        save_directory = f"{storage_uri}{run.info.run_id}"
         encoder_model.model.save_pretrained(save_directory + "/encoder") # type: ignore
         tokenizer.save_pretrained(save_directory + "/tokenizer") # type: ignore
-        logging.info("logging encoder to server")
-        mlflow.log_artifacts(save_directory + "/encoder", "encoder")
-        logging.info("logging tokenizer to server")
-        mlflow.log_artifacts(save_directory + "/tokenizer", "tokenizer")
-        logging.info("Deleting temp files")
-        shutil.rmtree(save_directory)
         logging.info("Done")
     logging.info("Training complete")
 
