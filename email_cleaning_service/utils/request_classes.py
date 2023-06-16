@@ -10,8 +10,9 @@ class EncoderSpecs(BaseModel):
 
 
 class PipelineSpecs(BaseModel):
-    origin: str
+    classifier_origin: str
     classifier_id: str
+    encoder_origin: str
     encoder_id: Optional[str]
     encoder_dim: Optional[int]
     features: Optional[List[str]]

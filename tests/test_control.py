@@ -19,8 +19,22 @@ def test_segmenting_service():
     ]
 
     pipeline_specs = PipelineSpecs(
-        origin="hugg",
-        classifier_id="a1f66311816e417cb94db7c2457b25d1"
+        classifier_origin="config",
+        classifier_id="",
+        encoder_origin="hugg",
+        encoder_id="sentence-transformers/paraphrase-MiniLM-L12-v2"
+        encoder_dim=384,
+        features=[
+            "phone_number",
+            "url",
+            "punctuation",
+            "horizontal_separator",
+            "hashtag",
+            "pipe",
+            "email",
+            "capitalized",
+            "full_caps"
+        ]
     )
 
     dataset = emailCleaner.segment(thread_list, pipeline_specs)

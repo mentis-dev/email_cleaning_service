@@ -229,8 +229,8 @@ class EmailDataset:
         Expected Columns in csv file:
         - Email: email number to group lines by
         - Text: text of the line of the email
-        - Label: label of the line of the email
-        - Fragment: fragment changes equal to 1 when the line corresponds to a new fragment
+        - Section: label of the line of the email
+        - FragmentChange: fragment changes equal to 1 when the line corresponds to a new fragment
         """
         df = pd.read_csv(csv_file)
         df["Text"] = df["Text"].astype(str)

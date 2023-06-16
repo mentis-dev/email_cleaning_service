@@ -252,12 +252,22 @@ class PipelineModel:
     
     @classmethod
     def from_specs(cls, specs: rq.PipelineSpecs) -> "PipelineModel":
-        if specs.origin == "mlflow":
+        if specs.classifier_origin == "mlflow" and not specs.encoder_origin:
             return cls.from_mlflow(specs)
-        elif specs.origin == "hugg":
-            return cls.from_hugg(specs)
-        else:
-            raise ValueError(f"Unknown origin {specs.origin}")
+        
+        obj = cls()
+        if specs.classifier_origin == "mlflow":
+            obj.classifier = ClassifierModel.from_mlflow(specs.classifier_id)
+        elif specs.classifier_origin == "specs":
+            obj.classifier = ClassifierModel.from_config(specs.classifier_id)
+        
+        if specs.encoder_origin == "mlflow":
+            obj.encoder = FeatureCreator.from_mlflow(specs.encoder_id, specs.features)
+        elif specs.encoder_origin == "hugg":
+            obj.encoder = FeatureCreator.from_hugg(specs.encoder_id, specs.features)
+        
+        return obj
+        
         
 
     def __call__(self, inputs: tf.Tensor) -> tf.Tensor:
