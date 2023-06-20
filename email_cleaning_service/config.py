@@ -1,10 +1,6 @@
 import tensorflow as tf
 import os
 
-TRACKING_URI = "http://localhost:5000" if not os.environ.get("TRACKING_URI") else os.environ.get("TRACKING_URI")
-
-STORAGE_URI = "./storage" if not os.environ.get("STORAGE_URI") else os.environ.get("STORAGE_URI")
-
 DEVICE = "GPU" if tf.config.list_physical_devices("GPU") else "CPU"
 
 SECTIONS = {

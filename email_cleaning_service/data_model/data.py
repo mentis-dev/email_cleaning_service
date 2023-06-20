@@ -269,7 +269,7 @@ class EmailDataset:
             lab_sequences = [thread.get_label_sequences() for thread in self.threads]
             self.dataset = tf.data.Dataset.from_tensor_slices(
                 (flatten_list(sequences), flatten_list(lab_sequences))  # type: ignore
-            ).batch(self.batch_size)
+            )
         else:
             self.dataset = tf.data.Dataset.from_tensor_slices(
                 flatten_list(sequences)

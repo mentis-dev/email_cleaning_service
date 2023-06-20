@@ -281,6 +281,9 @@ class PipelineModel:
             obj.encoder = FeatureCreator.from_mlflow(specs.encoder_id, specs.features)
         elif specs.encoder_origin == "hugg":
             obj.encoder = FeatureCreator.from_hugg(specs.encoder_id, specs.features)
+        obj.encoder_id = specs.encoder_id
+        obj.encoder_dim = specs.encoder_dim
+        obj.features = specs.features
         
         return obj
         

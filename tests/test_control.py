@@ -1,15 +1,14 @@
 from email_cleaning_service.control import EmailCleaner
 from email_cleaning_service.utils.request_classes import PipelineSpecs, RunSpecs, EncoderSpecs
 import pytest
-import sys
 
-if "../email_segmenting_service" not in sys.path:
-    sys.path.append("../email_segmenting_service")
+tracking_uri = "https://mentis.io/mlflow/"
+storage_uri = "tests/test_data/"
+
 
 def test_segmenting_service():
-    tracking_uri = "https://mentis.io/mlflow/"
 
-    emailCleaner = EmailCleaner()
+    emailCleaner = EmailCleaner(tracking_uri=tracking_uri, storage_uri=storage_uri)
 
     # Example of how to segment a dataset
 
@@ -20,7 +19,7 @@ def test_segmenting_service():
 
     pipeline_specs = PipelineSpecs(
         classifier_origin="h5",
-        classifier_id="email_cleaning_service/temp/base_multi_miniLM_classifier_optimized/multi_miniLM_classifier.h5",
+        classifier_id="./tests/test_data/base_multi_miniLM_classifier_optimized/multi_miniLM_classifier.h5",
         encoder_origin="hugg",
         encoder_id="sentence-transformers/paraphrase-MiniLM-L12-v2",
         encoder_dim=384,
@@ -41,9 +40,8 @@ def test_segmenting_service():
 
 @pytest.mark.skip(reason="too long")
 def test_encoder_training_service():
-    tracking_uri = "https://mentis.io/mlflow/"
 
-    emailCleaner = EmailCleaner()
+    emailCleaner = EmailCleaner(tracking_uri=tracking_uri, storage_uri=storage_uri)
 
     # Example of how to train a classifier
 
@@ -67,9 +65,8 @@ def test_encoder_training_service():
 
 @pytest.mark.skip(reason="too long")
 def test_classifier_training_service():
-    tracking_uri = "https://mentis.io/mlflow/"
 
-    emailCleaner = EmailCleaner()
+    emailCleaner = EmailCleaner(tracking_uri=tracking_uri, storage_uri=storage_uri)
 
     # Example of how to train a classifier
 
