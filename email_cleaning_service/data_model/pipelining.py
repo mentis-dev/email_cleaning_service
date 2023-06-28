@@ -46,6 +46,7 @@ class ExtractorModel:
                         for regex in self.regex_list
                     ]
                 )
+        print(feats[-1])
         return tf.convert_to_tensor(feats, dtype=tf.float32)
 
     @staticmethod

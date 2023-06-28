@@ -17,4 +17,23 @@ def test_extractor_model():
         ]
     )
     
+    text = "Hello, my name is John Doe! My phone number is +33781624352. My email is paultfetrer@hello.fr"
+    for extracted, needed in zip(extractor(tf.constant([text])).numpy()[0][0], [1, 0, 1, 0, 0, 0, 1, 5, 0]):
+        print(extracted, needed)
+        assert int(extracted) == needed
 
+def test_BareEncoder():
+    
+    encoder = pipelining.BareEncoder("sentence-transformers/all-MiniLM-L6-v2")
+
+def test_EncoderModel():
+    pass
+
+def test_FeatureCreator():
+    pass
+
+def test_ClassifierModel():
+    pass
+
+def test_Pipeline():
+    pass
