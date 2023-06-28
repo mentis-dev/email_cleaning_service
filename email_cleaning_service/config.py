@@ -1,10 +1,6 @@
 import tensorflow as tf
 import os
 
-TRACKING_URI = "http://localhost:5000" if not os.environ.get("TRACKING_URI") else os.environ.get("TRACKING_URI")
-
-STORAGE_URI = "./storage" if not os.environ.get("STORAGE_URI") else os.environ.get("STORAGE_URI")
-
 DEVICE = "GPU" if tf.config.list_physical_devices("GPU") else "CPU"
 
 SECTIONS = {
@@ -18,7 +14,7 @@ SECTIONS = {
 }
 
 FEATURE_REGEX = {
-    "phone_number": "^\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$",
+    "phone_number": "[\+\(]?[1-9][0-9 .\-\(\)]{8,}[0-9]",
     "url": "^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$",
     "punctuation": "[!?]",
     "horizontal_separator": "[-=~]",
@@ -26,7 +22,7 @@ FEATURE_REGEX = {
     "pipe": "[|]",
     "email": "[-\\w\\.]+@([-\\w]+\\.)+[-\\w]{2,4}",
     "capitalized": "[A-Z][a-z]*",
-    "full_caps": "[A-Z]+",
+    "full_caps": "[A-Z]{2,}",
 }
 
 PREPROCESSING = {

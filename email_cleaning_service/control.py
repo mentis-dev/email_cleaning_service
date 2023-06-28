@@ -6,7 +6,6 @@ from typing import List
 import email_cleaning_service.services.segmenting_service as seg
 import email_cleaning_service.services.training_service as train
 import mlflow
-from email_cleaning_service.config import TRACKING_URI, STORAGE_URI
 
 
 class EmailCleaner:
@@ -15,9 +14,9 @@ class EmailCleaner:
     tracking_uri: str
     storage_uri: str
 
-    def __init__(self):
-        self.tracking_uri = TRACKING_URI
-        self.storage_uri = STORAGE_URI
+    def __init__(self, tracking_uri:str, storage_uri:str):
+        self.tracking_uri = tracking_uri
+        self.storage_uri = storage_uri
         mlflow.set_tracking_uri(self.tracking_uri)
         logging.info("Controller initialized")
 

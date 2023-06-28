@@ -59,6 +59,9 @@ def train_classifier(run_specs: rq.RunSpecs, train_dataset: data.EmailDataset, t
         mlflow.log_metrics({
             metric_name: fit_history.history[metric_fn.__name__][-1] for metric_name, metric_fn in metrics_fn.items()
         })
+        mlflow.log_metrics({
+            f"val_{metric_name}": score for metric_name, score in zip(classifier.classifier.metrics_names, scores)
+        })
 
         mlflow.tensorflow.log_model(classifier.classifier, "classifier")
     logging.info("Training complete")
@@ -121,10 +124,11 @@ def train_encoder(run_specs: rq.RunSpecs, train_dataset: data.EmailLineDataset, 
             fit_history = clf.fit(train_feature_generator, epochs=run_specs.epochs)
             scores = clf.evaluate(test_feature_generator)
         
-        mlflow.log_metrics({"loss": fit_history.history["loss"][-1]})
+        mlflow.log_metrics({"loss": fit_history.history["loss"][-1],
+                            "val_loss": scores})
 
         logging.info("Saving model in temp files")
-        save_directory = f"{storage_uri}{run.info.run_id}"
+        save_directory = f"{storage_uri.strip('/')}/{run.info.run_id}"
         encoder_model.model.save_pretrained(save_directory + "/encoder") # type: ignore
         tokenizer.save_pretrained(save_directory + "/tokenizer") # type: ignore
         logging.info("Done")

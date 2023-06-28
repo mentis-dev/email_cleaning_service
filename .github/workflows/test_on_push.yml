@@ -8,11 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: cd ..
-      - name: tests
+      - name: setup test env
         uses: paolorechia/pox@v1.0.1
         with:
           tox_env: env
-      - uses: actions/checkout@v3
-      - run: tox 
+      - name: getting repo 
+        uses: actions/checkout@v3
+      - name: running tests
+        run: tox 
       
 

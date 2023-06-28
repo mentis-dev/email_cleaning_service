@@ -46,6 +46,7 @@ class ExtractorModel:
                         for regex in self.regex_list
                     ]
                 )
+        print(feats[-1])
         return tf.convert_to_tensor(feats, dtype=tf.float32)
 
     @staticmethod
@@ -136,7 +137,7 @@ class EncoderModel:
             inp = [inp]
         tokenized = [
             self.tokenizer(
-                [line.decode("utf-8") for line in lines],
+                [line.decode("utf-8")[:300] if len(line) > 300 else line.decode("utf-8") for line in lines],
                 padding=True,
                 truncation=True,
                 return_tensors="tf",
@@ -281,6 +282,9 @@ class PipelineModel:
             obj.encoder = FeatureCreator.from_mlflow(specs.encoder_id, specs.features)
         elif specs.encoder_origin == "hugg":
             obj.encoder = FeatureCreator.from_hugg(specs.encoder_id, specs.features)
+        obj.encoder_id = specs.encoder_id
+        obj.encoder_dim = specs.encoder_dim
+        obj.features = specs.features
         
         return obj
         
