@@ -234,6 +234,7 @@ class EmailDataset:
         """
         df = pd.read_csv(csv_file)
         df["Text"] = df["Text"].astype(str)
+
         df = df.groupby("Email").agg(
             {
                 "Text": list,
