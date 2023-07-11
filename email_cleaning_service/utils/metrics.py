@@ -307,6 +307,11 @@ def test_seq_fragment_f1_score():
 
     return seq_fragment_f1_score(y_true, y_pred)
 
+if __name__ == "__main__":
+    print(test_multifactor_loss())
+    print(test_seq_balanced_f1_score())
+    print(test_seq_fragment_f1_score())
+
 
 METRICS = {
     "seq_precision": seq_balanced_precision,

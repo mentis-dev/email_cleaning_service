@@ -137,7 +137,7 @@ class EncoderModel:
             inp = [inp]
         tokenized = [
             self.tokenizer(
-                [line.decode("utf-8")[:300] if len(line) > 300 else line.decode("utf-8") for line in lines],
+                [line.decode("utf-8")[:1024] if len(line) > 1024 else line.decode("utf-8") for line in lines],
                 padding=True,
                 truncation=True,
                 return_tensors="tf",
