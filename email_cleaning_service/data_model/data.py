@@ -111,7 +111,10 @@ class EmailThread:
             dtype=int,
         )
 
-    def get_label_sequences(self, seq_len: int = 64):
+    def get_label_sequences(self, seq_len: int = 64) -> tf.Tensor:
+        """Get labels for each line. Labels are a concatenation of the section and the fragment.
+        Returns a tensor of shape (n_sequences, seq_len, 8)
+        8 being the number of categories + 1 for the fragment change indicator (categories are  One Hot encoded)"""
         sections = tf.convert_to_tensor(
             self.get_section_sequences(seq_len), dtype=tf.int32
         )
@@ -127,8 +130,6 @@ class EmailThread:
         Arguments:
             cat_pred {list} -- list of category predictions
             frag_pred {list} -- list of fragment predictions
-
-        TODO: this method should be able to be called twice to segment multiple parts of a thread if batched separatly
         """
         message = []
         sections = []
@@ -202,6 +203,7 @@ class EmailDataset:
     - batch_size: batch_size for models
     - seq_order: list of integers used to know which emails are split in multiple sequences
     - dataset: tf.data.Datset object created to feed the pipeline
+    - is_labeled: boolean indicating if the dataset is labeled or not
     """
 
     threads: List[EmailThread]
@@ -264,6 +266,9 @@ class EmailDataset:
         raise NotImplementedError
 
     def build_dataset(self) -> "EmailDataset":
+        """Builds the tf.data.Dataset object from the list of threads
+        it can then be accessed with the get_tf_dataset method and the batch size can be set with the set_batch_size method
+        it is then used to feed the model training pipeline"""
         sequences = [thread.get_sequences() for thread in self.threads]
         self.seq_order = [i for i, seqs in enumerate(sequences) for _ in seqs]
         if self.is_labeled:
@@ -289,6 +294,7 @@ class EmailDataset:
 
 
 class EmailLineDataset:
+    """This class is used for the training of encoders which is done with single lines instead of sequences of lines"""
     dataset: tf.data.Dataset
 
     def __init__(self):

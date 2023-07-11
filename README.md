@@ -27,7 +27,7 @@ BaseModel classes exist to simplify interactions with the class. The most import
 from email_cleaning_service.utils.request_classes import PipelineSpecs
 
 pipeline_specs = PipelineSpecs(
-    classifier_origin="mlflow", # or "h5"
+    classifier_origin="mlflow", # or "h5" or "config
     classifier_id="a1f66311816e417cb94db7c2457b25d1",
     encoder_origin="hugg", # or "mlflow"
     encoder_id="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
@@ -157,7 +157,7 @@ dataset = RunSpecs(
 
 pipeline_specs = PipelineSpecs(
     classifier_origin="h5",
-    classifier_id="C:/Users/paull/Documents/GitHub/pip_testing/temp/base_multi_miniLM_classifier_optimized/multi_miniLM_classifier.h5",
+    classifier_id="./temp/base_multi_miniLM_classifier_optimized/multi_miniLM_classifier.h5",
     encoder_origin="mlflow",
     encoder_id="316fb5040b0a4353ade2e967290944ff",
     encoder_dim=384,

@@ -1,16 +1,11 @@
-import json
 import logging
-import os
 import re
 import tensorflow as tf
-from typing import List, Generator, Any, Optional, Union
+from typing import List, Union
 import email_cleaning_service.utils.request_classes as rq
 from email_cleaning_service.utils.data_manipulation import parse_str_to_list
-from keras.layers import Bidirectional, GRU, Dropout, Dense, Concatenate
 from transformers import TFAutoModel, AutoTokenizer
 import mlflow
-from mlflow.models.signature import ModelSignature
-import shutil
 
 from email_cleaning_service.config import FEATURE_REGEX
 
@@ -27,6 +22,10 @@ class ExtractorModel:
     - email
     - capitalized
     - full_caps
+
+    The extractor will return a tensor of shape (batch_size, sequence_length, len(features_list))
+
+    The regexs used to extract the features are in the config file.
     """
 
     def __init__(self, features_list: List[str]) -> None:
@@ -55,14 +54,20 @@ class ExtractorModel:
 
 
 class BareEncoder(tf.keras.layers.Layer):
+    """This class is used to create the encoder model without the tokenizer."""
     model: TFAutoModel
 
-    def __init__(self, model_name_or_path, **kwargs):
+    def __init__(self, model_name_or_path: str, **kwargs) -> None:
+        """Initializes the model. Loads the model from hugging face or from a local file saved with the save_pretrained method of the model."""
         super(BareEncoder, self).__init__()
         # loads transformers model
         self.model = TFAutoModel.from_pretrained(model_name_or_path, **kwargs)
 
-    def call(self, inputs, normalize=True):
+    def call(self, inputs: tf.Tensor, normalize:bool=True ) -> tf.Tensor:
+        """Runs the model on the inputs and returns the embeddings.
+        If normalize is True, the embeddings are normalized.
+        Mean pooling is used to get a single embedding for the entire sentence.
+        """
         # runs model on inputs
         model_output = self.model(inputs)  # type: ignore
         # Perform pooling. In this case, mean pooling.
@@ -100,6 +105,7 @@ class BareEncoder(tf.keras.layers.Layer):
 class EncoderModel:
     """Encodes text into embeddings. Uses transformers models.
     specify model_name_or_path with the name of the model you want to use from hugging face.
+    This class includes the tokenizer for the model.
     """
 
     tokenizer: AutoTokenizer
@@ -112,6 +118,9 @@ class EncoderModel:
 
     @classmethod
     def from_mlflow(cls, run_id: str) -> "EncoderModel":
+        """Loads the model the temp folder with the run_id as name.
+        
+        TODO: change the temp folder to the storage uri"""
         artifact_path = f"./temp/{run_id}"
         logging.info(f"Loading model from {artifact_path}")
         obj = cls(artifact_path + "/tokenizer", artifact_path + "/encoder")
@@ -120,10 +129,12 @@ class EncoderModel:
 
     @classmethod
     def from_hugg(cls, encoder_id: str) -> "EncoderModel":
+        """Loads the model from hugging face."""
         return cls(encoder_id, encoder_id)
     
     @classmethod
     def from_specs(cls, specs: str, **kwargs) -> "EncoderModel":
+        """Loads the model from the specs."""
         if specs.origin == "mlflow":
             return cls.from_mlflow(specs.encoder)
         elif specs.origin == "hugg":
@@ -211,7 +222,7 @@ class ClassifierModel:
 
 class PipelineModel:
     """Combines the encoder, the extractor and the classifier.
-    Specify model_name with the name of the model you want to use from the MODELS dictionary (or models.json file)."""
+    Uses the PipelineSpecs class to define the exact pipeline to load."""
 
     encoder: FeatureCreator
     classifier: ClassifierModel
