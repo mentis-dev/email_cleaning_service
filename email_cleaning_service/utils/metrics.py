@@ -1,4 +1,5 @@
 """This module defines usefull metrics and losses for model training
+if you want the metrics to be usable specify the name and the function in the METRICS dict at the end of the file
 """
 import tensorflow as tf
 from keras import backend as K

@@ -12,6 +12,7 @@ def flatten_list(L: List[List[Any]]) -> List[Any]:
 
 
 def parse_str_to_list(s: str) -> List[str]:
+    "used to parse the string representation of a list into a list mostly for use with parameters stored in mlflow"
     return [
         x.strip().strip("'").strip('"')
         for x in s.strip().strip("[").strip("]").split(",")
