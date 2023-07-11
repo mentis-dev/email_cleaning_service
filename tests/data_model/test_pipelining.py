@@ -27,7 +27,10 @@ def test_BareEncoder():
     encoder = pipelining.BareEncoder("sentence-transformers/all-MiniLM-L6-v2")
 
 def test_EncoderModel():
-    pass
+    
+    encoder = pipelining.EncoderModel.from_hugg("sentence-transformers/all-MiniLM-L6-v2")
+
+    assert encoder(tf.constant(["Hello, my name is John Doe!"])).get_shape().as_list() == [1, 384]
 
 def test_FeatureCreator():
     pass
