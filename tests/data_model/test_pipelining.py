@@ -30,10 +30,18 @@ def test_EncoderModel():
     
     encoder = pipelining.EncoderModel.from_hugg("sentence-transformers/all-MiniLM-L6-v2")
 
-    assert encoder(tf.constant(["Hello, my name is John Doe!"])).get_shape().as_list() == [1, 384]
+    assert encoder(tf.constant(["Hello, my name is John Doe!"])).get_shape().as_list() == [1, 1, 384]
 
 def test_FeatureCreator():
-    pass
+    
+    feature_creator = pipelining.FeatureCreator.from_hugg("sentence-transformers/all-MiniLM-L6-v2"
+                                                          , features_list=[
+                                                              "phone_number",
+                                                              "url",
+                                                              "punctuation"
+                                                              ])
+    
+    assert feature_creator(tf.constant(["Hello, my name is John Doe!"])).get_shape().as_list() == [1, 1, 387]
 
 def test_ClassifierModel():
     pass
