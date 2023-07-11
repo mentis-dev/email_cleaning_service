@@ -43,8 +43,4 @@ def test_FeatureCreator():
     
     assert feature_creator(tf.constant(["Hello, my name is John Doe!"])).get_shape().as_list() == [1, 1, 387]
 
-def test_ClassifierModel():
-    pass
 
-def test_Pipeline():
-    pass
