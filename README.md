@@ -19,7 +19,7 @@ from email_cleaning_service.control import EmailCleaner
 email_cleaner = EmailCleaner(tracking_uri, storage_uri)
 ```
 
-Usage revolves around the emailCleaner classwhich is the preferred interface for the package. The class takes two arguments, the tracking_uri and the storage_uri. The tracking_uri is the uri of the MLflow tracking server and the storage_uri is the uri of the storage server (can be a path to a local folder).
+Usage revolves around the emailCleaner class which is the preferred interface for the package. The class takes two arguments, the tracking_uri and the storage_uri. The tracking_uri is the uri of the MLflow tracking server and the storage_uri is the uri of the storage server (can be a path to a local folder).
 
 BaseModel classes exist to simplify interactions with the class. The most important of these is the PipelineSpecs class which is used to define the pipeline to be used for cleaning the emails.
 
@@ -177,13 +177,29 @@ pipeline_specs = PipelineSpecs(
 email_cleaner.train_classifier(dataset, pipeline_specs)
 ```
 
+### Evaluate a Model
+
+To evaluate a model, use the evaluate method as follows:
+
+```py
+email_cleaner.evaluate(csv_path, pipeline_specs)
+```
+
+This will evaluate the designated pipeline on the data in the csv file and return the metrics. (all metrics are used by default)
+
 ## Package Structure
 
 ![package_architecture](./assets/package_architecture.png)
 
 ## Maintaining the Package
 
+tests have been setup using tox and pytest. To run the tests, run the following command:
 
+```bash
+tox
+```
+
+to add tests, feel free to modify the python scriptys in the tests folder. An action automatically runs the tests on every push.
 
 ## Known Issues
 

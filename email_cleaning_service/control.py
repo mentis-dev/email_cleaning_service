@@ -51,5 +51,14 @@ class EmailCleaner:
         encoder = pipe.EncoderModel.from_specs(encoder_specs)
         train.train_encoder(run_specs, train_dataset, test_dataset, encoder, self.storage_uri)  # type: ignore
 
+    def evaluate(self, csv_test: str, pipeline_specs: rq.PipelineSpecs):
+        """Used to evaluate the classifier on the dataset
+        pipeline must be a valid PipelineModel object
+        """
+        test_dataset = data.EmailDataset.from_csv(csv_test)
+        pipeline = pipe.PipelineModel.from_specs(pipeline_specs)
+        scores = train.evaluate(test_dataset, pipeline)
+        return scores
+
 
 

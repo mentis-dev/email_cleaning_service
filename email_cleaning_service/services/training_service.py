@@ -134,6 +134,33 @@ def train_encoder(run_specs: rq.RunSpecs, train_dataset: data.EmailLineDataset, 
         logging.info("Done")
     logging.info("Training complete")
 
+def evaluate(test_dataset: data.EmailDataset, pipeline: pipe.PipelineModel) -> None:
+    """Used to evaluate the pipeline on the dataset
+    pipeline must be a valid PipelineModel object
+    """
+
+    # get the generator which will feed the classifier training
+    def _get_generator(tf_dataset: tf.data.Dataset, feature_creator: pipe.FeatureCreator):
+        def gen():
+            for text, label in tf_dataset:
+                yield feature_creator(text) , label
+        return gen
+
+    logging.info("Evaluating pipeline...")
+    test_tf_dataset = test_dataset.set_batch_size(batch_size=32).get_tf_dataset()
+    feature_creator = pipeline.encoder
+    classifier = pipeline.classifier
+
+    test_feature_generator = _get_generator(test_tf_dataset, feature_creator)
+    classifier.classifier.compile(optimizer="adam", loss=multifactor_loss())
+
+    with tf.device(DEVICE): # type: ignore
+        scores = classifier.classifier.evaluate(test_feature_generator, verbose=1) # type: ignore
+    
+    return scores
+
+
+
 
 
     
