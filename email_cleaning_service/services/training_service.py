@@ -152,7 +152,7 @@ def evaluate(test_dataset: data.EmailDataset, pipeline: pipe.PipelineModel) -> N
     classifier = pipeline.classifier
 
     test_feature_generator = _get_generator(test_tf_dataset, feature_creator)
-    classifier.classifier.compile(optimizer="adam", loss=multifactor_loss())
+    classifier.classifier.compile(optimizer="adam", loss=multifactor_loss(), metrics=METRICS.values())
 
     with tf.device(DEVICE): # type: ignore
         scores = classifier.classifier.evaluate(test_feature_generator, verbose=1) # type: ignore

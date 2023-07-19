@@ -203,7 +203,7 @@ to add tests, feel free to modify the python scriptys in the tests folder. An ac
 
 ## Known Issues
 
-
+There seems to be an issue when training classifiers for too long. The metrics on the testing data start to decrease after a certain number of epochs. This is not noticeable when training for a few epochs but becomes more apparent when training for longer. 
 
 
 
