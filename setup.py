@@ -31,8 +31,8 @@ def read_requirements(path):
 
 setup(
     name="email_cleaning_service",
-    version="0.1.3",
-    description="Awesome email_cleaning_service created by paul_lestrat",
+    version="0.2.1",
+    description="email_cleaning_service created by paul_lestrat",
     url="https://github.com/JacksonKnew/email_cleaning_service",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",

@@ -147,7 +147,7 @@ def evaluate(test_dataset: data.EmailDataset, pipeline: pipe.PipelineModel) -> N
         return gen
 
     logging.info("Evaluating pipeline...")
-    test_tf_dataset = test_dataset.set_batch_size(batch_size=32).get_tf_dataset()
+    test_tf_dataset = test_dataset.set_batch_size(batch_size=4).get_tf_dataset()
     feature_creator = pipeline.encoder
     classifier = pipeline.classifier
 
@@ -155,7 +155,7 @@ def evaluate(test_dataset: data.EmailDataset, pipeline: pipe.PipelineModel) -> N
     classifier.classifier.compile(optimizer="adam", loss=multifactor_loss(), metrics=METRICS.values())
 
     with tf.device(DEVICE): # type: ignore
-        scores = classifier.classifier.evaluate(test_feature_generator, verbose=1) # type: ignore
+        scores = classifier.classifier.evaluate(test_feature_generator(), verbose=1) # type: ignore
     
     return scores
 
